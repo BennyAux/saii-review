@@ -358,6 +358,28 @@
       background: #f0fdf4;
       color: #166534;
     }
+
+    /* REOPEN BUTTON & NUMBER INPUTS */
+    .btn-reopen {
+      padding: 4px 10px;
+      background: none;
+      color: #6b7280;
+      border: 1.5px solid #ddd;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-reopen:hover { background: #f5f5f5; }
+    .num-input {
+      width: 78px;
+      padding: 5px 7px;
+      border: 1.5px solid #ddd;
+      border-radius: 5px;
+      font-size: 13px;
+      color: #1a1a1a;
+    }
+    .num-input:focus { outline: none; border-color: #2563eb; }
   </style>
 </head>
 <body>
@@ -480,7 +502,7 @@ async function loadQueue() {
 
   const { data: receipts, error } = await sb
     .from('receipts')
-    .select('id, vendor, receipt_date, total_amount, status, submitted_at, file_name')
+    .select('id, vendor, receipt_date, total_amount, status, submitted_at, file_name, tokens_input, tokens_output')
     .eq('status', 'needs_review')
     .order('submitted_at', { ascending: true });
 
@@ -509,6 +531,7 @@ async function loadQueue() {
           <th>Items</th>
           <th>Total</th>
           <th>Submitted</th>
+          <th>Est. Cost</th>
           <th></th>
         </tr>
       </thead>
@@ -520,6 +543,7 @@ async function loadQueue() {
             <td>${countMap[r.id] || 0} items</td>
             <td>${r.total_amount != null ? '$' + Number(r.total_amount).toFixed(2) : '—'}</td>
             <td style="color:#aaa;font-size:13px">${formatDateTime(r.submitted_at)}</td>
+            <td style="color:#aaa;font-size:13px">${calcCost(r.tokens_input, r.tokens_output) || '—'}</td>
             <td><button class="btn-review" onclick="openReceipt('${r.id}')">Review →</button></td>
           </tr>`).join('')}
       </tbody>
@@ -628,7 +652,11 @@ function renderLineRow(item) {
 
   let actionCell;
   if (done) {
-    actionCell = `<span class="badge badge-${item.status}">${item.status}${item.confirmed_sku ? ': ' + item.confirmed_sku : ''}</span>`;
+    actionCell = `
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span class="badge badge-${item.status}">${item.status}${item.confirmed_sku ? ': ' + item.confirmed_sku : ''}</span>
+        <button class="btn-reopen" onclick="reopenLine('${item.id}')">Edit</button>
+      </div>`;
   } else {
     actionCell = `
       <div class="action-btns" id="actions-${item.id}">
@@ -644,11 +672,27 @@ function renderLineRow(item) {
     ? `<strong>${item.ai_suggested_sku}</strong>${item.ai_notes ? `<div class="ai-notes">${item.ai_notes}</div>` : ''}`
     : '<span style="color:#dc2626;font-size:13px">No match</span>';
 
+  const qtyVal = item.confirmed_quantity ?? item.raw_quantity;
+  const priceVal = item.confirmed_unit_price ?? item.raw_unit_price;
+
+  const qtyCell = done
+    ? `${qtyVal != null ? qtyVal : '—'}${item.raw_unit ? ' ' + item.raw_unit : ''}`
+    : `<input type="number" class="num-input" value="${qtyVal ?? ''}" step="any" min="0"
+             onchange="updateLineField('${item.id}','confirmed_quantity',this.value)"
+             onclick="event.stopPropagation()">
+       <span style="font-size:12px;color:#888;margin-left:3px">${item.raw_unit || ''}</span>`;
+
+  const priceCell = done
+    ? `${priceVal != null ? '$' + Number(priceVal).toFixed(2) : '—'}`
+    : `<input type="number" class="num-input" value="${priceVal ?? ''}" step="0.01" min="0"
+             onchange="updateLineField('${item.id}','confirmed_unit_price',this.value)"
+             onclick="event.stopPropagation()">`;
+
   return `
     <tr id="row-${item.id}" class="${done ? 'done-row' : ''}">
       <td>${item.raw_description || '—'}</td>
-      <td>${item.raw_quantity != null ? item.raw_quantity : '—'}${item.raw_unit ? ' ' + item.raw_unit : ''}</td>
-      <td>${item.raw_unit_price != null ? '$' + Number(item.raw_unit_price).toFixed(2) : '—'}</td>
+      <td>${qtyCell}</td>
+      <td>${priceCell}</td>
       <td style="font-size:13px">${aiMatch}</td>
       <td>${confDisplay}</td>
       <td id="action-${item.id}">${actionCell}</td>
@@ -666,7 +710,24 @@ function showSkuSearch(lineId) {
              autocomplete="off">
       <div class="sku-dropdown" id="sku-dropdown-${lineId}"></div>
     </div>`;
-  document.getElementById(`sku-input-${lineId}`).focus();
+  const input = document.getElementById(`sku-input-${lineId}`);
+  input.focus();
+  requestAnimationFrame(() => {
+    const drop = document.getElementById(`sku-dropdown-${lineId}`);
+    if (!drop) return;
+    const rect = input.getBoundingClientRect();
+    drop.style.position = 'fixed';
+    drop.style.left     = rect.left + 'px';
+    drop.style.width    = Math.max(rect.width, 280) + 'px';
+    drop.style.zIndex   = '9999';
+    if (window.innerHeight - rect.bottom < 240) {
+      drop.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+      drop.style.top    = 'auto';
+    } else {
+      drop.style.top    = (rect.bottom + 4) + 'px';
+      drop.style.bottom = 'auto';
+    }
+  });
   filterSkus(lineId, '');
 }
 
@@ -713,8 +774,11 @@ async function ignoreLine(lineId) {
 function markLineDone(lineId, status, sku) {
   const row = document.getElementById(`row-${lineId}`);
   row.classList.add('done-row');
-  document.getElementById(`action-${lineId}`).innerHTML =
-    `<span class="badge badge-${status}">${status}${sku ? ': ' + sku : ''}</span>`;
+  document.getElementById(`action-${lineId}`).innerHTML = `
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span class="badge badge-${status}">${status}${sku ? ': ' + sku : ''}</span>
+      <button class="btn-reopen" onclick="reopenLine('${lineId}')">Edit</button>
+    </div>`;
   recalcPending();
 }
 
@@ -756,6 +820,24 @@ function formatDate(d) {
 function formatDateTime(d) {
   return new Date(d).toLocaleDateString('en-US',
     { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+// ─── LINE FIELD EDITS ─────────────────────────────────────────────
+async function updateLineField(lineId, field, value) {
+  const num = parseFloat(value);
+  if (isNaN(num)) return;
+  await sb.from('line_items').update({ [field]: num }).eq('id', lineId);
+}
+
+async function reopenLine(lineId) {
+  await sb.from('line_items').update({ status: 'pending' }).eq('id', lineId);
+  reloadReview();
+}
+
+function calcCost(tokensIn, tokensOut) {
+  if (!tokensIn && !tokensOut) return null;
+  const cost = ((tokensIn || 0) * 5 / 1e6) + ((tokensOut || 0) * 25 / 1e6);
+  return cost < 0.005 ? '<$0.01' : '$' + cost.toFixed(2);
 }
 
 // ─── UPLOAD ───────────────────────────────────────────────────────
