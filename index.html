@@ -96,8 +96,9 @@
       background: white;
       border-radius: 10px;
       border: 1px solid #e5e5e5;
-      overflow: hidden;
+      /* overflow: visible so SKU dropdown is not clipped */
     }
+    .table-scroll { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th {
       text-align: left;
@@ -215,7 +216,7 @@
     }
 
     /* LINE ITEMS */
-    .done-row td { opacity: 0.55; }
+    .done-row td:not(:last-child) { opacity: 0.55; }
 
     /* SKU SEARCH */
     .sku-search-wrap { position: relative; width: 260px; }
@@ -523,7 +524,7 @@ async function loadQueue() {
   });
 
   body.innerHTML = `
-    <table>
+    <div class="table-scroll"><table>
       <thead>
         <tr>
           <th>Vendor</th>
@@ -547,7 +548,7 @@ async function loadQueue() {
             <td><button class="btn-review" onclick="openReceipt('${r.id}')">Review →</button></td>
           </tr>`).join('')}
       </tbody>
-    </table>`;
+    </table></div>`;
 }
 
 // ─── LOAD SKUS ────────────────────────────────────────────────────
@@ -627,7 +628,7 @@ function renderLineItems(items) {
     return;
   }
   body.innerHTML = `
-    <table>
+    <div class="table-scroll"><table>
       <thead>
         <tr>
           <th>Description on Receipt</th>
@@ -641,7 +642,7 @@ function renderLineItems(items) {
       <tbody id="line-items-tbody">
         ${items.map(renderLineRow).join('')}
       </tbody>
-    </table>`;
+    </table></div>`;
 }
 
 function renderLineRow(item) {
@@ -710,24 +711,7 @@ function showSkuSearch(lineId) {
              autocomplete="off">
       <div class="sku-dropdown" id="sku-dropdown-${lineId}"></div>
     </div>`;
-  const input = document.getElementById(`sku-input-${lineId}`);
-  input.focus();
-  requestAnimationFrame(() => {
-    const drop = document.getElementById(`sku-dropdown-${lineId}`);
-    if (!drop) return;
-    const rect = input.getBoundingClientRect();
-    drop.style.position = 'fixed';
-    drop.style.left     = rect.left + 'px';
-    drop.style.width    = Math.max(rect.width, 280) + 'px';
-    drop.style.zIndex   = '9999';
-    if (window.innerHeight - rect.bottom < 240) {
-      drop.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
-      drop.style.top    = 'auto';
-    } else {
-      drop.style.top    = (rect.bottom + 4) + 'px';
-      drop.style.bottom = 'auto';
-    }
-  });
+  document.getElementById(`sku-input-${lineId}`).focus();
   filterSkus(lineId, '');
 }
 
