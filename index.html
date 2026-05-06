@@ -913,6 +913,28 @@ async function loadPostedQueue() {
     countMap[row.receipt_id] = (countMap[row.receipt_id] || 0) + 1;
   });
 
+  // Duplicate detection (same logic as pending)
+  const dupSet = new Set();
+  const withRef = receipts.filter(r => r.receipt_ref && r.vendor);
+  if (withRef.length) {
+    const refs = [...new Set(withRef.map(r => r.receipt_ref))];
+    const { data: allWithRef } = await sb
+      .from('receipts')
+      .select('id, vendor, receipt_ref')
+      .in('receipt_ref', refs);
+    const pairCount = {};
+    (allWithRef || []).forEach(r => {
+      const key = (r.vendor || '') + '||' + (r.receipt_ref || '');
+      pairCount[key] = (pairCount[key] || 0) + 1;
+    });
+    receipts.forEach(r => {
+      if (r.vendor && r.receipt_ref) {
+        const key = (r.vendor || '') + '||' + (r.receipt_ref || '');
+        if ((pairCount[key] || 0) > 1) dupSet.add(r.id);
+      }
+    });
+  }
+
   body.innerHTML = `
     <div class="table-scroll"><table>
       <thead>
@@ -930,7 +952,10 @@ async function loadPostedQueue() {
           const locked = lastClosePeriod && r.receipt_date && r.receipt_date <= lastClosePeriod;
           return `
           <tr>
-            <td><strong>${r.vendor || r.file_name || '—'}</strong></td>
+            <td>
+              <strong>${r.vendor || r.file_name || '—'}</strong>
+              ${dupSet.has(r.id) ? '<span class="badge badge-needs_review" style="margin-left:6px;font-size:11px">Possible duplicate</span>' : ''}
+            </td>
             <td>${r.receipt_date ? formatDate(r.receipt_date) : '—'}</td>
             <td>${countMap[r.id] || 0} items</td>
             <td>${r.total_amount != null ? '$' + Number(r.total_amount).toFixed(2) : '—'}</td>
