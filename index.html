@@ -88,7 +88,7 @@
     .btn-ghost:hover { background: #f5f5f5; }
 
     /* QUEUE */
-    #queue.active, #review.active { display: block; }
+    #queue.active, #review.active, #inventory.active { display: block; }
     .page-content { max-width: 960px; margin: 32px auto; padding: 0 24px 80px; }
     .page-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
 
@@ -381,6 +381,176 @@
       color: #1a1a1a;
     }
     .num-input:focus { outline: none; border-color: #2563eb; }
+
+    /* NAV TABS */
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+    }
+    .nav-tab {
+      padding: 8px 18px;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #888;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-tab:hover { background: #f5f5f5; color: #333; }
+    .nav-tab.active { background: #eff6ff; color: #2563eb; }
+
+    /* INVENTORY SCREEN */
+    .inv-sub-nav {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #e5e5e5;
+      padding-bottom: 0;
+    }
+    .inv-sub-btn {
+      padding: 9px 18px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #888;
+    }
+    .inv-sub-btn:hover { color: #333; }
+    .inv-sub-btn.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+    .inv-sub-view { display: none; }
+    .inv-sub-view.active { display: block; }
+
+    .inv-totals-bar {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 16px 20px;
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .totals-item label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #aaa;
+      margin-bottom: 3px;
+    }
+    .totals-item .totals-val { font-size: 20px; font-weight: 800; color: #1a1a1a; }
+    .totals-item .totals-val.blue { color: #2563eb; }
+
+    .btn-close-period {
+      padding: 10px 24px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-close-period:hover { background: #1d4ed8; }
+
+    .btn-danger {
+      padding: 7px 16px;
+      background: none;
+      color: #dc2626;
+      border: 1.5px solid #dc2626;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-danger:hover { background: #fef2f2; }
+
+    .btn-secondary {
+      padding: 7px 16px;
+      background: none;
+      color: #2563eb;
+      border: 1.5px solid #2563eb;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-secondary:hover { background: #eff6ff; }
+
+    .close-form {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .close-form h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+    .close-form .form-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .close-form .form-field { display: flex; flex-direction: column; gap: 5px; }
+    .close-form label { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.4px; }
+    .close-form input[type="date"],
+    .close-form input[type="number"],
+    .close-form input[type="text"],
+    .close-form textarea {
+      padding: 8px 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #1a1a1a;
+    }
+    .close-form input:focus,
+    .close-form textarea:focus { outline: none; border-color: #2563eb; }
+    .close-form textarea { resize: vertical; min-height: 64px; }
+
+    .count-table-wrap { background: white; border: 1px solid #e5e5e5; border-radius: 10px; }
+    .count-table-wrap .table-scroll { overflow-x: auto; }
+
+    .history-period {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      margin-bottom: 16px;
+    }
+    .history-period-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .history-period-header:hover { background: #fafafa; border-radius: 10px; }
+    .history-period-header h4 { font-size: 15px; font-weight: 700; }
+    .history-period-body { display: none; border-top: 1px solid #e5e5e5; }
+    .history-period-body.open { display: block; }
+
+    .badge-close      { background: #d1fae5; color: #065f46; }
+    .badge-post_close { background: #dbeafe; color: #1e40af; }
+    .badge-draft      { background: #fef3c7; color: #92400e; }
+    .badge-closed     { background: #d1fae5; color: #065f46; }
+
+    .opening-form {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .opening-form h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .opening-form p  { font-size: 13px; color: #888; margin-bottom: 16px; }
   </style>
 </head>
 <body>
@@ -404,7 +574,13 @@
 ═══════════════════════════════════════════════ -->
 <div id="queue" class="screen">
   <nav>
-    <div class="logo">SA<span>II</span> · Receipt Review</div>
+    <div style="display:flex;align-items:center;gap:24px">
+      <div class="logo">SA<span>II</span></div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" id="tab-receipts" onclick="switchTab('receipts')">Receipts</button>
+        <button class="nav-tab" id="tab-inventory" onclick="switchTab('inventory')">Inventory</button>
+      </div>
+    </div>
     <button class="btn-ghost" onclick="logout()">Log out</button>
   </nav>
   <div class="page-content">
@@ -423,6 +599,100 @@
     <div class="card">
       <div id="queue-body"><div class="loading">Loading...</div></div>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     INVENTORY
+═══════════════════════════════════════════════ -->
+<div id="inventory" class="screen">
+  <nav>
+    <div style="display:flex;align-items:center;gap:24px">
+      <div class="logo">SA<span>II</span></div>
+      <div class="nav-tabs">
+        <button class="nav-tab" id="tab-receipts2" onclick="switchTab('receipts')">Receipts</button>
+        <button class="nav-tab active" id="tab-inventory2" onclick="switchTab('inventory')">Inventory</button>
+      </div>
+    </div>
+    <button class="btn-ghost" onclick="logout()">Log out</button>
+  </nav>
+  <div class="page-content">
+    <div class="inv-sub-nav">
+      <button class="inv-sub-btn active" id="isub-current"   onclick="showInvSub('current')">Current</button>
+      <button class="inv-sub-btn"        id="isub-monthend"  onclick="showInvSub('monthend')">Month-End Close</button>
+      <button class="inv-sub-btn"        id="isub-history"   onclick="showInvSub('history')">History</button>
+    </div>
+
+    <!-- ── Current ── -->
+    <div id="inv-current" class="inv-sub-view active">
+      <div id="inv-totals-bar" class="inv-totals-bar">
+        <div class="totals-item"><label>SKUs on Hand</label><div class="totals-val" id="tot-skus">—</div></div>
+        <div class="totals-item"><label>Total Units</label><div class="totals-val" id="tot-units">—</div></div>
+        <div class="totals-item"><label>Total Valuation</label><div class="totals-val blue" id="tot-value">—</div></div>
+        <div class="totals-item"><label>Last Updated</label><div class="totals-val" style="font-size:14px;font-weight:600" id="tot-updated">—</div></div>
+      </div>
+      <div id="inv-opening-notice" class="opening-form" style="display:none">
+        <h3>Set Opening Balance</h3>
+        <p>No prior period close found. Enter opening balances for any SKUs that had stock before your first receipt was entered.</p>
+        <div id="opening-form-body"><div class="loading">Loading SKUs...</div></div>
+      </div>
+      <div class="card">
+        <div id="inv-current-body"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ── Month-End Close ── -->
+    <div id="inv-monthend" class="inv-sub-view">
+      <div class="close-form" id="close-period-form">
+        <h3>Close Period</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Period End Date</label>
+            <input type="date" id="close-period-end">
+          </div>
+          <div class="form-field">
+            <label>Notes (optional)</label>
+            <input type="text" id="close-notes" placeholder="e.g. April 2025 close" style="width:280px">
+          </div>
+          <button class="btn-close-period" onclick="startPeriodClose()">Start Count Sheet</button>
+        </div>
+      </div>
+      <div id="monthend-count-section" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px">
+          <div>
+            <strong id="count-period-label" style="font-size:16px"></strong>
+            <span class="badge badge-draft" style="margin-left:8px">Draft</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-ghost" onclick="cancelPeriodClose()">Cancel</button>
+            <button class="btn-close-period" onclick="confirmPeriodClose()">Confirm &amp; Close Period</button>
+          </div>
+        </div>
+        <div class="count-table-wrap">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Name</th>
+                  <th>Calc. Qty on Hand</th>
+                  <th>Physical Count</th>
+                  <th>Unit Cost Override</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="count-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── History ── -->
+    <div id="inv-history" class="inv-sub-view">
+      <div id="inv-history-body"><div class="loading">Loading...</div></div>
+    </div>
+
   </div>
 </div>
 
@@ -494,6 +764,9 @@ function showScreen(name) {
 function showQueue() {
   showScreen('queue');
   loadQueue();
+  // Ensure receipt tab is active
+  ['tab-receipts','tab-receipts2'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('active'); });
+  ['tab-inventory','tab-inventory2'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active'); });
 }
 
 // ─── QUEUE ────────────────────────────────────────────────────────
@@ -875,6 +1148,501 @@ async function handleUpload(event) {
     setStatus('Error: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
+  }
+}
+
+// ─── TAB NAVIGATION ───────────────────────────────────────────────
+function switchTab(tab) {
+  if (tab === 'receipts') {
+    showScreen('queue');
+    loadQueue();
+    // sync both navs
+    ['tab-receipts','tab-receipts2'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('active'); });
+    ['tab-inventory','tab-inventory2'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active'); });
+  } else {
+    showScreen('inventory');
+    loadInventoryCurrent();
+    ['tab-inventory','tab-inventory2'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('active'); });
+    ['tab-receipts','tab-receipts2'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active'); });
+  }
+}
+
+function showInvSub(sub) {
+  ['current','monthend','history'].forEach(s => {
+    document.getElementById('inv-' + s).classList.toggle('active', s === sub);
+    document.getElementById('isub-' + s).classList.toggle('active', s === sub);
+  });
+  if (sub === 'history') loadInventoryHistory();
+  if (sub === 'current') loadInventoryCurrent();
+}
+
+// ─── INVENTORY: CURRENT VIEW ──────────────────────────────────────
+// Calculates qty on hand per SKU from:
+//   1. Last closed snapshot (if any) as the base
+//   2. + approved/corrected line items after that snapshot's period_end
+//   3. + opening balance if no snapshot exists
+
+let invData = []; // cached for month-end count sheet
+
+async function loadInventoryCurrent() {
+  document.getElementById('inv-current-body').innerHTML = '<div class="loading">Loading...</div>';
+  document.getElementById('tot-skus').textContent = '—';
+  document.getElementById('tot-units').textContent = '—';
+  document.getElementById('tot-value').textContent = '—';
+  document.getElementById('tot-updated').textContent = '—';
+
+  try {
+    // Last closed snapshot
+    const { data: snapshots } = await sb
+      .from('inventory_snapshots')
+      .select('id, period_end, status')
+      .eq('status', 'closed')
+      .order('period_end', { ascending: false })
+      .limit(1);
+
+    const lastSnap = snapshots?.[0] ?? null;
+
+    // Snapshot lines for last period (all rows summed)
+    let snapLines = [];
+    if (lastSnap) {
+      const { data: lines } = await sb
+        .from('inventory_snapshot_lines')
+        .select('sku, physical_qty, unit_cost, close_type')
+        .eq('snapshot_id', lastSnap.id);
+      snapLines = lines || [];
+    }
+
+    // Line items after the snapshot (approved + corrected, with confirmed_sku)
+    let liQuery = sb
+      .from('line_items')
+      .select('confirmed_sku, confirmed_quantity, raw_quantity, confirmed_unit_price, raw_unit_price, receipts!inner(receipt_date)')
+      .in('status', ['approved', 'corrected'])
+      .not('confirmed_sku', 'is', null);
+
+    if (lastSnap) {
+      liQuery = liQuery.gt('receipts.receipt_date', lastSnap.period_end);
+    }
+
+    const { data: lineItems } = await liQuery;
+
+    // Inventory catalog (for names)
+    const { data: catalog } = await sb
+      .from('inventory')
+      .select('sku, name, category, unit, opening_qty, opening_unit_cost')
+      .eq('property', 'raw_material')
+      .eq('active', true)
+      .order('name');
+
+    const catalogMap = {};
+    (catalog || []).forEach(c => { catalogMap[c.sku] = c; });
+
+    // Build qty & cost map from snapshot
+    const qtyMap  = {};
+    const costMap = {};
+
+    if (lastSnap) {
+      // Group snap lines by SKU — sum physical_qty, last unit_cost wins
+      const skuGroups = {};
+      snapLines.forEach(l => {
+        if (!skuGroups[l.sku]) skuGroups[l.sku] = { qty: 0, cost: null };
+        if (l.physical_qty != null) skuGroups[l.sku].qty += Number(l.physical_qty);
+        if (l.unit_cost != null) skuGroups[l.sku].cost = Number(l.unit_cost);
+      });
+      Object.entries(skuGroups).forEach(([sku, v]) => {
+        qtyMap[sku]  = v.qty;
+        costMap[sku] = v.cost;
+      });
+    } else {
+      // Use opening balances from catalog
+      (catalog || []).forEach(c => {
+        if (c.opening_qty != null) {
+          qtyMap[c.sku]  = Number(c.opening_qty);
+          costMap[c.sku] = c.opening_unit_cost != null ? Number(c.opening_unit_cost) : null;
+        }
+      });
+    }
+
+    // Add purchases from line items (running weighted average cost)
+    (lineItems || []).forEach(li => {
+      const sku      = li.confirmed_sku;
+      const qty      = Number(li.confirmed_quantity ?? li.raw_quantity ?? 0);
+      const cost     = Number(li.confirmed_unit_price ?? li.raw_unit_price ?? 0);
+      const prevQty  = qtyMap[sku] || 0;
+      const prevCost = costMap[sku] ?? cost;
+      const newQty   = prevQty + qty;
+      costMap[sku]   = newQty > 0 ? ((prevQty * prevCost) + (qty * cost)) / newQty : cost;
+      qtyMap[sku]    = newQty;
+    });
+
+    // Filter to SKUs with qty > 0
+    invData = Object.entries(qtyMap)
+      .filter(([, qty]) => qty > 0)
+      .map(([sku, qty]) => ({
+        sku,
+        name:     catalogMap[sku]?.name     ?? sku,
+        category: catalogMap[sku]?.category ?? '—',
+        unit:     catalogMap[sku]?.unit     ?? '',
+        qty:      Number(qty),
+        unitCost: costMap[sku] != null ? Number(costMap[sku]) : null,
+        totalCost: costMap[sku] != null ? Number(qty) * Number(costMap[sku]) : null,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    // Totals
+    const totalUnits = invData.reduce((s, r) => s + r.qty, 0);
+    const totalValue = invData.reduce((s, r) => s + (r.totalCost ?? 0), 0);
+    document.getElementById('tot-skus').textContent    = invData.length;
+    document.getElementById('tot-units').textContent   = totalUnits.toLocaleString('en-US', {maximumFractionDigits: 2});
+    document.getElementById('tot-value').textContent   = '$' + totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('tot-updated').textContent = lastSnap
+      ? 'After close: ' + formatDate(lastSnap.period_end)
+      : (lineItems?.length ? 'Running (no close yet)' : 'Opening balances');
+
+    // Show opening balance form if no snapshot and no opening balances set
+    const hasOpening = (catalog || []).some(c => c.opening_qty != null);
+    const noClose    = !lastSnap;
+    document.getElementById('inv-opening-notice').style.display = (noClose && !hasOpening) ? 'block' : 'none';
+    if (noClose && !hasOpening) renderOpeningForm(catalog || []);
+
+    if (!invData.length) {
+      document.getElementById('inv-current-body').innerHTML =
+        '<div class="empty-state">No inventory on hand. Approve receipts or set opening balances to get started.</div>';
+      return;
+    }
+
+    document.getElementById('inv-current-body').innerHTML = `
+      <div class="table-scroll"><table>
+        <thead>
+          <tr>
+            <th>SKU</th><th>Name</th><th>Category</th><th style="text-align:right">Qty on Hand</th><th style="text-align:right">Avg Unit Cost</th><th style="text-align:right">Total Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${invData.map(r => `
+            <tr>
+              <td style="font-size:12px;color:#888">${r.sku}</td>
+              <td><strong>${r.name}</strong></td>
+              <td>${r.category}</td>
+              <td style="text-align:right">${r.qty.toLocaleString('en-US',{maximumFractionDigits:4})}${r.unit ? ' ' + r.unit : ''}</td>
+              <td style="text-align:right">${r.unitCost != null ? '$' + r.unitCost.toFixed(4) : '—'}</td>
+              <td style="text-align:right;font-weight:700">${r.totalCost != null ? '$' + r.totalCost.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table></div>`;
+
+  } catch (e) {
+    document.getElementById('inv-current-body').innerHTML = `<div class="empty-state" style="color:#dc2626">Error: ${e.message}</div>`;
+  }
+}
+
+// ─── OPENING BALANCE FORM ─────────────────────────────────────────
+function renderOpeningForm(catalog) {
+  const rawMats = catalog.filter(c => c.opening_qty == null).slice(0, 60);
+  document.getElementById('opening-form-body').innerHTML = `
+    <div class="table-scroll"><table>
+      <thead><tr><th>SKU</th><th>Name</th><th>Opening Qty</th><th>Unit Cost</th></tr></thead>
+      <tbody>
+        ${rawMats.map(c => `
+          <tr>
+            <td style="font-size:12px;color:#888">${c.sku}</td>
+            <td>${c.name}</td>
+            <td><input type="number" class="num-input" id="oq-${c.sku}" step="any" min="0" placeholder="0" style="width:90px"></td>
+            <td><input type="number" class="num-input" id="oc-${c.sku}" step="0.0001" min="0" placeholder="0.00" style="width:90px"></td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>
+    <div style="margin-top:16px;display:flex;align-items:center;gap:12px">
+      <button class="btn-close-period" onclick="saveOpeningBalances(${JSON.stringify(rawMats.map(c=>c.sku))})">Save Opening Balances</button>
+      <span id="opening-save-status" style="font-size:13px;color:#888"></span>
+    </div>`;
+}
+
+async function saveOpeningBalances(skuList) {
+  const statusEl = document.getElementById('opening-save-status');
+  statusEl.textContent = 'Saving...';
+  try {
+    for (const sku of skuList) {
+      const qtyEl  = document.getElementById('oq-' + sku);
+      const costEl = document.getElementById('oc-' + sku);
+      const qty  = parseFloat(qtyEl?.value);
+      const cost = parseFloat(costEl?.value);
+      if (!isNaN(qty) && qty > 0) {
+        await sb.from('inventory').update({
+          opening_qty:       qty,
+          opening_unit_cost: isNaN(cost) ? null : cost,
+          opening_date:      new Date().toISOString().slice(0,10),
+        }).eq('sku', sku);
+      }
+    }
+    statusEl.textContent = 'Saved!';
+    setTimeout(() => { loadInventoryCurrent(); }, 800);
+  } catch (e) {
+    statusEl.textContent = 'Error: ' + e.message;
+  }
+}
+
+// ─── INVENTORY: MONTH-END CLOSE ───────────────────────────────────
+let draftPeriodEnd = null;
+let draftNotes     = null;
+
+function startPeriodClose() {
+  const pe = document.getElementById('close-period-end').value;
+  if (!pe) { alert('Please select a period end date.'); return; }
+  draftPeriodEnd = pe;
+  draftNotes     = document.getElementById('close-notes').value.trim() || null;
+
+  document.getElementById('count-period-label').textContent =
+    'Physical Count — Period ending ' + formatDate(pe);
+
+  // Populate count sheet from current invData (loaded by Current tab)
+  if (!invData.length) {
+    document.getElementById('count-tbody').innerHTML =
+      '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:24px">No inventory data — visit Current tab first.</td></tr>';
+  } else {
+    document.getElementById('count-tbody').innerHTML = invData.map(r => `
+      <tr>
+        <td style="font-size:12px;color:#888">${r.sku}</td>
+        <td><strong>${r.name}</strong></td>
+        <td style="text-align:right">${r.qty.toLocaleString('en-US',{maximumFractionDigits:4})}${r.unit ? ' ' + r.unit : ''}</td>
+        <td><input type="number" class="num-input" id="count-${r.sku}" step="any" min="0"
+                   value="${r.qty.toFixed(4)}" style="width:100px"></td>
+        <td><input type="number" class="num-input" id="cost-${r.sku}" step="0.0001" min="0"
+                   placeholder="${r.unitCost != null ? r.unitCost.toFixed(4) : ''}"
+                   style="width:100px"></td>
+        <td><input type="text" class="num-input" id="note-${r.sku}" placeholder="optional"
+                   style="width:140px;font-size:12px"></td>
+      </tr>`).join('');
+  }
+
+  document.getElementById('monthend-count-section').style.display = 'block';
+  document.getElementById('close-period-form').style.display = 'none';
+}
+
+function cancelPeriodClose() {
+  document.getElementById('monthend-count-section').style.display = 'none';
+  document.getElementById('close-period-form').style.display = 'block';
+}
+
+async function confirmPeriodClose() {
+  if (!draftPeriodEnd) return;
+  if (!confirm(`Close period ending ${formatDate(draftPeriodEnd)}? This will lock it.`)) return;
+
+  try {
+    // Create snapshot header
+    const { data: snap, error: snapErr } = await sb
+      .from('inventory_snapshots')
+      .insert({ period_end: draftPeriodEnd, status: 'closed', closed_at: new Date().toISOString(), notes: draftNotes })
+      .select('id')
+      .single();
+    if (snapErr) throw snapErr;
+
+    // Insert snapshot lines
+    const lines = invData.map(r => {
+      const countEl = document.getElementById('count-' + r.sku);
+      const costEl  = document.getElementById('cost-'  + r.sku);
+      const noteEl  = document.getElementById('note-'  + r.sku);
+      const qty  = parseFloat(countEl?.value ?? r.qty);
+      const cost = parseFloat(costEl?.value);
+      return {
+        snapshot_id:  snap.id,
+        period_end:   draftPeriodEnd,
+        sku:          r.sku,
+        close_type:   'close',
+        physical_qty: isNaN(qty) ? null : qty,
+        unit_cost:    isNaN(cost) ? null : cost,
+        notes:        noteEl?.value.trim() || null,
+      };
+    });
+
+    if (lines.length) {
+      const { error: lineErr } = await sb.from('inventory_snapshot_lines').insert(lines);
+      if (lineErr) throw lineErr;
+    }
+
+    alert(`Period closed successfully!`);
+    cancelPeriodClose();
+    document.getElementById('close-period-end').value = '';
+    document.getElementById('close-notes').value = '';
+    loadInventoryCurrent();
+    showInvSub('current');
+
+  } catch (e) {
+    alert('Error closing period: ' + e.message);
+  }
+}
+
+// ─── INVENTORY: HISTORY ───────────────────────────────────────────
+async function loadInventoryHistory() {
+  document.getElementById('inv-history-body').innerHTML = '<div class="loading">Loading...</div>';
+  try {
+    const { data: snaps, error } = await sb
+      .from('inventory_snapshots')
+      .select('id, period_end, status, closed_at, notes')
+      .order('period_end', { ascending: false });
+
+    if (error) throw error;
+    if (!snaps?.length) {
+      document.getElementById('inv-history-body').innerHTML =
+        '<div class="empty-state">No closed periods yet.</div>';
+      return;
+    }
+
+    document.getElementById('inv-history-body').innerHTML =
+      snaps.map(s => `
+        <div class="history-period" id="hsnap-${s.id}">
+          <div class="history-period-header" onclick="toggleHistorySnap('${s.id}')">
+            <div>
+              <h4>Period ending ${formatDate(s.period_end)}</h4>
+              <div style="font-size:12px;color:#aaa;margin-top:2px">
+                Closed ${s.closed_at ? formatDateTime(s.closed_at) : '—'}
+                ${s.notes ? ' · ' + s.notes : ''}
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="badge badge-${s.status}">${s.status}</span>
+              <button class="btn-secondary" style="font-size:12px;padding:5px 12px"
+                onclick="event.stopPropagation();openPostCloseAdj('${s.id}','${s.period_end}')">+ Adjustment</button>
+              <span id="htoggle-${s.id}" style="color:#aaa;font-size:16px">▸</span>
+            </div>
+          </div>
+          <div id="hbody-${s.id}" class="history-period-body">
+            <div class="loading" style="padding:24px">Loading lines...</div>
+          </div>
+        </div>`).join('');
+
+  } catch (e) {
+    document.getElementById('inv-history-body').innerHTML =
+      `<div class="empty-state" style="color:#dc2626">Error: ${e.message}</div>`;
+  }
+}
+
+async function toggleHistorySnap(snapId) {
+  const body    = document.getElementById('hbody-'   + snapId);
+  const toggle  = document.getElementById('htoggle-' + snapId);
+  const isOpen  = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  toggle.textContent = isOpen ? '▸' : '▾';
+  if (!isOpen) await loadSnapLines(snapId, body);
+}
+
+async function loadSnapLines(snapId, bodyEl) {
+  bodyEl.innerHTML = '<div class="loading" style="padding:24px">Loading...</div>';
+  const { data: lines, error } = await sb
+    .from('inventory_snapshot_lines')
+    .select('sku, physical_qty, unit_cost, close_type, notes, created_at')
+    .eq('snapshot_id', snapId)
+    .order('sku')
+    .order('created_at');
+
+  if (error || !lines?.length) {
+    bodyEl.innerHTML = '<div style="padding:24px;color:#aaa;font-size:14px">No lines recorded.</div>';
+    return;
+  }
+
+  bodyEl.innerHTML = `
+    <div class="table-scroll"><table>
+      <thead>
+        <tr>
+          <th>SKU</th><th>Type</th><th style="text-align:right">Qty</th>
+          <th style="text-align:right">Unit Cost</th><th style="text-align:right">Value</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${lines.map(l => {
+          const val = (l.physical_qty != null && l.unit_cost != null)
+            ? '$' + (l.physical_qty * l.unit_cost).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
+            : '—';
+          return `
+          <tr>
+            <td style="font-size:12px;color:#888">${l.sku}</td>
+            <td><span class="badge badge-${l.close_type}">${l.close_type}</span></td>
+            <td style="text-align:right">${l.physical_qty != null ? Number(l.physical_qty).toLocaleString('en-US',{maximumFractionDigits:4}) : '—'}</td>
+            <td style="text-align:right">${l.unit_cost != null ? '$' + Number(l.unit_cost).toFixed(4) : '—'}</td>
+            <td style="text-align:right;font-weight:700">${val}</td>
+            <td style="font-size:12px;color:#888">${l.notes || '—'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>`;
+}
+
+// ─── POST-CLOSE ADJUSTMENT ────────────────────────────────────────
+let adjSnapId = null;
+let adjPeriodEnd = null;
+
+function openPostCloseAdj(snapId, periodEnd) {
+  adjSnapId   = snapId;
+  adjPeriodEnd = periodEnd;
+  const skuOptions = invData.map(r => `<option value="${r.sku}">${r.name} (${r.sku})</option>`).join('');
+  const modal = document.createElement('div');
+  modal.id = 'adj-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:999';
+  modal.innerHTML = `
+    <div style="background:white;border-radius:12px;padding:32px;width:440px;max-width:95vw;box-shadow:0 8px 40px rgba(0,0,0,0.18)">
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:6px">Post-Close Adjustment</h3>
+      <p style="font-size:13px;color:#888;margin-bottom:20px">Period ending ${formatDate(periodEnd)}</p>
+      <div class="close-form" style="padding:0;border:none;margin:0">
+        <div class="form-row" style="flex-direction:column;gap:12px">
+          <div class="form-field">
+            <label>SKU</label>
+            <select id="adj-sku" style="padding:8px 12px;border:1.5px solid #ddd;border-radius:6px;font-size:14px">
+              <option value="">— Select SKU —</option>
+              ${skuOptions}
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Physical Qty (leave blank for cost-only adjustment)</label>
+            <input type="number" id="adj-qty" step="any" min="0" placeholder="e.g. 12.5">
+          </div>
+          <div class="form-field">
+            <label>Unit Cost Override</label>
+            <input type="number" id="adj-cost" step="0.0001" min="0" placeholder="e.g. 2.4500">
+          </div>
+          <div class="form-field">
+            <label>Notes</label>
+            <input type="text" id="adj-notes" placeholder="Reason for adjustment">
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end">
+        <button class="btn-ghost" onclick="closeAdjModal()">Cancel</button>
+        <button class="btn-close-period" onclick="savePostCloseAdj()">Save Adjustment</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function closeAdjModal() {
+  document.getElementById('adj-modal')?.remove();
+}
+
+async function savePostCloseAdj() {
+  const sku   = document.getElementById('adj-sku').value;
+  const qty   = parseFloat(document.getElementById('adj-qty').value);
+  const cost  = parseFloat(document.getElementById('adj-cost').value);
+  const notes = document.getElementById('adj-notes').value.trim() || null;
+
+  if (!sku) { alert('Please select a SKU.'); return; }
+  if (isNaN(qty) && isNaN(cost)) { alert('Enter a physical qty or a cost override (or both).'); return; }
+
+  try {
+    const { error } = await sb.from('inventory_snapshot_lines').insert({
+      snapshot_id:  adjSnapId,
+      period_end:   adjPeriodEnd,
+      sku,
+      close_type:   'post_close',
+      physical_qty: isNaN(qty)  ? null : qty,
+      unit_cost:    isNaN(cost) ? null : cost,
+      notes,
+    });
+    if (error) throw error;
+    closeAdjModal();
+    // Refresh the open body if visible
+    const body = document.getElementById('hbody-' + adjSnapId);
+    if (body?.classList.contains('open')) await loadSnapLines(adjSnapId, body);
+    loadInventoryCurrent();
+  } catch (e) {
+    alert('Error saving adjustment: ' + e.message);
   }
 }
 
