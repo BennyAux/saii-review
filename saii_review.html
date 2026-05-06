@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAII · Receipt Review</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    .screen { display: none; }
+
+    /* LOGIN */
+    #login.active {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-card {
+      background: white;
+      border-radius: 12px;
+      padding: 48px;
+      width: 360px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .login-card h1 { font-size: 32px; font-weight: 800; margin-bottom: 4px; color: #1a1a1a; }
+    .login-card h1 span { color: #2563eb; }
+    .login-card p { color: #888; margin-bottom: 32px; font-size: 14px; }
+    .login-card input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 18px;
+      margin-bottom: 12px;
+      text-align: center;
+      letter-spacing: 6px;
+    }
+    .login-card input:focus { outline: none; border-color: #2563eb; }
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #1d4ed8; }
+    .error-msg { color: #dc2626; font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+    /* NAV */
+    nav {
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .logo { font-weight: 800; font-size: 18px; }
+    .logo span { color: #2563eb; }
+    .btn-ghost {
+      background: none;
+      border: 1.5px solid #ddd;
+      padding: 7px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #555;
+    }
+    .btn-ghost:hover { background: #f5f5f5; }
+
+    /* QUEUE */
+    #queue.active, #review.active { display: block; }
+    .page-content { max-width: 960px; margin: 32px auto; padding: 0 24px 80px; }
+    .page-title { font-size: 22px; font-weight: 700; margin-bottom: 20px; }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e5e5e5;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #888;
+      background: #fafafa;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    td {
+      padding: 14px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-pending     { background: #f3f4f6; color: #6b7280; }
+    .badge-approved    { background: #d1fae5; color: #065f46; }
+    .badge-corrected   { background: #dbeafe; color: #1e40af; }
+    .badge-ignored     { background: #f3f4f6; color: #6b7280; }
+    .badge-unmatched   { background: #fee2e2; color: #991b1b; }
+    .badge-needs_review { background: #fef3c7; color: #92400e; }
+    .badge-processing  { background: #ede9fe; color: #5b21b6; }
+
+    .conf-high { color: #059669; font-weight: 700; }
+    .conf-mid  { color: #d97706; font-weight: 700; }
+    .conf-low  { color: #dc2626; font-weight: 700; }
+
+    .btn-review {
+      padding: 7px 16px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-review:hover { background: #1d4ed8; }
+
+    .empty-state { padding: 48px; text-align: center; color: #aaa; font-size: 15px; }
+    .loading { padding: 32px; text-align: center; color: #bbb; }
+
+    /* REVIEW META */
+    .review-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .back-btn {
+      background: none;
+      border: 1.5px solid #ddd;
+      font-size: 18px;
+      cursor: pointer;
+      color: #555;
+      padding: 6px 12px;
+      border-radius: 6px;
+      line-height: 1;
+    }
+    .back-btn:hover { background: #f5f5f5; color: #111; }
+
+    .receipt-meta {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding: 16px 20px;
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+    }
+    .meta-item label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #aaa;
+      margin-bottom: 3px;
+    }
+    .meta-item span { font-size: 15px; font-weight: 600; }
+
+    /* RECEIPT IMAGE */
+    .img-toggle-btn {
+      background: none;
+      border: 1.5px solid #ddd;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #555;
+      margin-bottom: 16px;
+    }
+    .img-toggle-btn:hover { background: #f5f5f5; }
+    .receipt-img-wrap { margin-bottom: 16px; }
+    .receipt-img-wrap img {
+      max-width: 100%;
+      max-height: 420px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      display: block;
+    }
+
+    /* LINE ITEMS */
+    .done-row td { opacity: 0.55; }
+
+    /* SKU SEARCH */
+    .sku-search-wrap { position: relative; width: 260px; }
+    .sku-search-wrap input {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1.5px solid #2563eb;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .sku-search-wrap input:focus { outline: none; }
+    .sku-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 200;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+    .sku-option {
+      padding: 9px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .sku-option:last-child { border-bottom: none; }
+    .sku-option:hover { background: #eff6ff; }
+    .sku-option .sku-name { font-weight: 600; }
+    .sku-option .sku-meta { color: #888; font-size: 11px; margin-top: 1px; }
+
+    /* ACTION BUTTONS */
+    .action-btns { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .btn-approve {
+      padding: 5px 12px;
+      background: #059669;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-approve:hover { background: #047857; }
+    .btn-override {
+      padding: 5px 12px;
+      background: none;
+      color: #2563eb;
+      border: 1.5px solid #2563eb;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-override:hover { background: #eff6ff; }
+    .btn-ignore {
+      padding: 5px 12px;
+      background: none;
+      color: #999;
+      border: 1.5px solid #ddd;
+      border-radius: 5px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-ignore:hover { background: #f5f5f5; }
+
+    /* SUBMIT BAR */
+    .submit-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid #e5e5e5;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+    }
+    #review:not(.active) .submit-bar { display: none; }
+    .pending-count { font-size: 14px; color: #888; }
+    .btn-submit {
+      padding: 12px 36px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-submit:hover { background: #1d4ed8; }
+    .btn-submit:disabled { background: #bfdbfe; cursor: not-allowed; }
+
+    .ai-notes { font-size: 12px; color: #888; font-style: italic; margin-top: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════════════ -->
+<div id="login" class="screen">
+  <div class="login-card">
+    <h1>SA<span>II</span></h1>
+    <p>Receipt Review Portal</p>
+    <input type="password" id="passcode-input" placeholder="••••••••"
+           onkeydown="if(event.key==='Enter') login()">
+    <button class="btn-primary" onclick="login()">Enter</button>
+    <div class="error-msg" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     RECEIPT QUEUE
+═══════════════════════════════════════════════ -->
+<div id="queue" class="screen">
+  <nav>
+    <div class="logo">SA<span>II</span> · Receipt Review</div>
+    <button class="btn-ghost" onclick="logout()">Log out</button>
+  </nav>
+  <div class="page-content">
+    <div class="page-title">Pending Receipts</div>
+    <div class="card">
+      <div id="queue-body"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     RECEIPT REVIEW
+═══════════════════════════════════════════════ -->
+<div id="review" class="screen">
+  <nav>
+    <div class="logo">SA<span>II</span> · Receipt Review</div>
+    <button class="btn-ghost" onclick="logout()">Log out</button>
+  </nav>
+  <div class="page-content">
+    <div class="review-header">
+      <button class="back-btn" onclick="showQueue()" title="Back to queue">← Back</button>
+      <div class="page-title" style="margin-bottom:0" id="review-title">Review Receipt</div>
+    </div>
+    <div id="receipt-meta" class="receipt-meta" style="display:none"></div>
+    <div id="receipt-img-section"></div>
+    <div class="card">
+      <div id="review-body"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+  <div class="submit-bar">
+    <span class="pending-count" id="pending-count"></span>
+    <button class="btn-submit" id="submit-btn" onclick="submitReview()" disabled>
+      Submit Review
+    </button>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG — replace these three values ──────────────────────────
+const SUPABASE_URL  = 'YOUR_SUPABASE_URL';        // e.g. https://abcxyz.supabase.co
+const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';   // Project Settings > API > anon public
+const PASSCODE      = 'YOUR_PASSCODE';             // e.g. bakery2024
+// ──────────────────────────────────────────────────────────────────
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let skus = [];
+let currentReceiptId = null;
+
+// ─── AUTH ─────────────────────────────────────────────────────────
+function login() {
+  const val = document.getElementById('passcode-input').value;
+  if (val !== PASSCODE) {
+    document.getElementById('login-error').textContent = 'Incorrect passcode.';
+    document.getElementById('passcode-input').value = '';
+    return;
+  }
+  sessionStorage.setItem('saii_auth', '1');
+  document.getElementById('login-error').textContent = '';
+  showScreen('queue');
+  loadQueue();
+  loadSkus();
+}
+
+function logout() {
+  sessionStorage.removeItem('saii_auth');
+  document.getElementById('passcode-input').value = '';
+  showScreen('login');
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+}
+
+function showQueue() {
+  showScreen('queue');
+  loadQueue();
+}
+
+// ─── QUEUE ────────────────────────────────────────────────────────
+async function loadQueue() {
+  const body = document.getElementById('queue-body');
+  body.innerHTML = '<div class="loading">Loading...</div>';
+
+  const { data: receipts, error } = await sb
+    .from('receipts')
+    .select('id, vendor, receipt_date, total_amount, status, submitted_at, file_name')
+    .eq('status', 'needs_review')
+    .order('submitted_at', { ascending: true });
+
+  if (error || !receipts || receipts.length === 0) {
+    body.innerHTML = '<div class="empty-state">No pending receipts — all caught up!</div>';
+    return;
+  }
+
+  const ids = receipts.map(r => r.id);
+  const { data: counts } = await sb
+    .from('line_items')
+    .select('receipt_id')
+    .in('receipt_id', ids);
+
+  const countMap = {};
+  (counts || []).forEach(row => {
+    countMap[row.receipt_id] = (countMap[row.receipt_id] || 0) + 1;
+  });
+
+  body.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Vendor</th>
+          <th>Receipt Date</th>
+          <th>Items</th>
+          <th>Total</th>
+          <th>Submitted</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${receipts.map(r => `
+          <tr>
+            <td><strong>${r.vendor || r.file_name || '—'}</strong></td>
+            <td>${r.receipt_date ? formatDate(r.receipt_date) : '—'}</td>
+            <td>${countMap[r.id] || 0} items</td>
+            <td>${r.total_amount != null ? '$' + Number(r.total_amount).toFixed(2) : '—'}</td>
+            <td style="color:#aaa;font-size:13px">${formatDateTime(r.submitted_at)}</td>
+            <td><button class="btn-review" onclick="openReceipt('${r.id}')">Review →</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ─── LOAD SKUS ────────────────────────────────────────────────────
+async function loadSkus() {
+  const { data } = await sb
+    .from('inventory')
+    .select('sku, name, category')
+    .eq('property', 'raw_material')
+    .eq('active', true)
+    .order('name');
+  skus = data || [];
+}
+
+// ─── RECEIPT REVIEW ───────────────────────────────────────────────
+async function openReceipt(id) {
+  currentReceiptId = id;
+  showScreen('review');
+
+  document.getElementById('review-body').innerHTML = '<div class="loading">Loading...</div>';
+  document.getElementById('receipt-meta').style.display = 'none';
+  document.getElementById('receipt-img-section').innerHTML = '';
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('pending-count').textContent = '';
+
+  const [{ data: receipt }, { data: items }] = await Promise.all([
+    sb.from('receipts').select('*').eq('id', id).single(),
+    sb.from('line_items').select('*').eq('receipt_id', id).order('created_at')
+  ]);
+
+  document.getElementById('review-title').textContent =
+    `Review: ${receipt.vendor || receipt.file_name || 'Receipt'}`;
+
+  // Meta bar
+  const meta = document.getElementById('receipt-meta');
+  meta.style.display = 'flex';
+  meta.innerHTML = `
+    <div class="meta-item"><label>Vendor</label><span>${receipt.vendor || '—'}</span></div>
+    <div class="meta-item"><label>Date</label><span>${receipt.receipt_date ? formatDate(receipt.receipt_date) : '—'}</span></div>
+    <div class="meta-item"><label>Total</label><span>${receipt.total_amount != null ? '$' + Number(receipt.total_amount).toFixed(2) : '—'}</span></div>
+    <div class="meta-item"><label>Line Items</label><span>${(items || []).length}</span></div>
+    <div class="meta-item"><label>AI Confidence</label><span>${receipt.ai_confidence != null ? receipt.ai_confidence + '%' : '—'}</span></div>`;
+
+  // Receipt image
+  if (receipt.storage_path) {
+    try {
+      const { data: signed } = await sb.storage
+        .from('receipts')
+        .createSignedUrl(receipt.storage_path, 3600);
+      if (signed?.signedUrl) {
+        document.getElementById('receipt-img-section').innerHTML = `
+          <button class="img-toggle-btn" onclick="toggleImage(this)">▸ Show Receipt Image</button>
+          <div class="receipt-img-wrap" id="img-wrap" style="display:none">
+            <img src="${signed.signedUrl}" alt="Receipt"
+                 onerror="this.parentElement.innerHTML='<p style=color:#bbb;font-size:13px;padding:8px 0>Could not load image.</p>'">
+          </div>`;
+      }
+    } catch (e) {}
+  }
+
+  renderLineItems(items || []);
+  updateSubmitBar(items || []);
+}
+
+function toggleImage(btn) {
+  const wrap = document.getElementById('img-wrap');
+  const show = wrap.style.display === 'none';
+  wrap.style.display = show ? 'block' : 'none';
+  btn.textContent = show ? '▾ Hide Receipt Image' : '▸ Show Receipt Image';
+}
+
+// ─── LINE ITEMS TABLE ─────────────────────────────────────────────
+function renderLineItems(items) {
+  const body = document.getElementById('review-body');
+  if (!items.length) {
+    body.innerHTML = '<div class="empty-state">No line items found for this receipt.</div>';
+    return;
+  }
+  body.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Description on Receipt</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>AI Match</th>
+          <th>Confidence</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="line-items-tbody">
+        ${items.map(renderLineRow).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderLineRow(item) {
+  const done = item.status !== 'pending';
+  const conf = item.ai_confidence;
+  const confClass = conf >= 80 ? 'conf-high' : conf >= 50 ? 'conf-mid' : 'conf-low';
+  const confDisplay = conf != null ? `<span class="${confClass}">${conf}%</span>` : '—';
+
+  let actionCell;
+  if (done) {
+    actionCell = `<span class="badge badge-${item.status}">${item.status}${item.confirmed_sku ? ': ' + item.confirmed_sku : ''}</span>`;
+  } else {
+    actionCell = `
+      <div class="action-btns" id="actions-${item.id}">
+        ${item.ai_suggested_sku
+          ? `<button class="btn-approve" onclick="approveLine('${item.id}','${item.ai_suggested_sku}')">Approve</button>`
+          : ''}
+        <button class="btn-override" onclick="showSkuSearch('${item.id}')">Override</button>
+        <button class="btn-ignore" onclick="ignoreLine('${item.id}')">Ignore</button>
+      </div>`;
+  }
+
+  const aiMatch = item.ai_suggested_sku
+    ? `<strong>${item.ai_suggested_sku}</strong>${item.ai_notes ? `<div class="ai-notes">${item.ai_notes}</div>` : ''}`
+    : '<span style="color:#dc2626;font-size:13px">No match</span>';
+
+  return `
+    <tr id="row-${item.id}" class="${done ? 'done-row' : ''}">
+      <td>${item.raw_description || '—'}</td>
+      <td>${item.raw_quantity != null ? item.raw_quantity : '—'}${item.raw_unit ? ' ' + item.raw_unit : ''}</td>
+      <td>${item.raw_unit_price != null ? '$' + Number(item.raw_unit_price).toFixed(2) : '—'}</td>
+      <td style="font-size:13px">${aiMatch}</td>
+      <td>${confDisplay}</td>
+      <td id="action-${item.id}">${actionCell}</td>
+    </tr>`;
+}
+
+// ─── SKU SEARCH ───────────────────────────────────────────────────
+function showSkuSearch(lineId) {
+  document.getElementById(`action-${lineId}`).innerHTML = `
+    <div class="sku-search-wrap">
+      <input type="text" placeholder="Search by name or SKU..."
+             id="sku-input-${lineId}"
+             oninput="filterSkus('${lineId}', this.value)"
+             onkeydown="if(event.key==='Escape') reloadReview()"
+             autocomplete="off">
+      <div class="sku-dropdown" id="sku-dropdown-${lineId}"></div>
+    </div>`;
+  document.getElementById(`sku-input-${lineId}`).focus();
+  filterSkus(lineId, '');
+}
+
+function filterSkus(lineId, query) {
+  const dropdown = document.getElementById(`sku-dropdown-${lineId}`);
+  const q = query.trim().toLowerCase();
+  const matches = q.length === 0
+    ? skus.slice(0, 40)
+    : skus.filter(s =>
+        s.name.toLowerCase().includes(q) || s.sku.toLowerCase().includes(q)
+      ).slice(0, 40);
+
+  if (!matches.length) {
+    dropdown.innerHTML = '<div class="sku-option" style="color:#bbb;cursor:default">No matches found</div>';
+    return;
+  }
+  dropdown.innerHTML = matches.map(s => `
+    <div class="sku-option" onclick="correctLine('${lineId}','${s.sku}')">
+      <div class="sku-name">${s.name}</div>
+      <div class="sku-meta">${s.sku} · ${s.category}</div>
+    </div>`).join('');
+}
+
+function reloadReview() {
+  openReceipt(currentReceiptId);
+}
+
+// ─── LINE ITEM ACTIONS ────────────────────────────────────────────
+async function approveLine(lineId, suggestedSku) {
+  await sb.from('line_items').update({ confirmed_sku: suggestedSku, status: 'approved' }).eq('id', lineId);
+  markLineDone(lineId, 'approved', suggestedSku);
+}
+
+async function correctLine(lineId, newSku) {
+  await sb.from('line_items').update({ confirmed_sku: newSku, status: 'corrected' }).eq('id', lineId);
+  markLineDone(lineId, 'corrected', newSku);
+}
+
+async function ignoreLine(lineId) {
+  await sb.from('line_items').update({ status: 'ignored' }).eq('id', lineId);
+  markLineDone(lineId, 'ignored', null);
+}
+
+function markLineDone(lineId, status, sku) {
+  const row = document.getElementById(`row-${lineId}`);
+  row.classList.add('done-row');
+  document.getElementById(`action-${lineId}`).innerHTML =
+    `<span class="badge badge-${status}">${status}${sku ? ': ' + sku : ''}</span>`;
+  recalcPending();
+}
+
+function recalcPending() {
+  const rows = document.querySelectorAll('#line-items-tbody tr');
+  let pending = 0;
+  rows.forEach(r => { if (!r.classList.contains('done-row')) pending++; });
+  document.getElementById('pending-count').textContent =
+    pending > 0 ? `${pending} item${pending === 1 ? '' : 's'} still need review` : 'All items reviewed';
+  document.getElementById('submit-btn').disabled = pending > 0;
+}
+
+function updateSubmitBar(items) {
+  const pending = items.filter(i => i.status === 'pending').length;
+  document.getElementById('pending-count').textContent =
+    pending > 0 ? `${pending} item${pending === 1 ? '' : 's'} still need review` : 'All items reviewed';
+  document.getElementById('submit-btn').disabled = pending > 0;
+}
+
+// ─── SUBMIT ───────────────────────────────────────────────────────
+async function submitReview() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  await sb.from('receipts').update({
+    status: 'approved',
+    reviewed_at: new Date().toISOString()
+  }).eq('id', currentReceiptId);
+
+  showQueue();
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────
+function formatDate(d) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-US',
+    { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function formatDateTime(d) {
+  return new Date(d).toLocaleDateString('en-US',
+    { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+if (sessionStorage.getItem('saii_auth') === '1') {
+  showScreen('queue');
+  loadQueue();
+  loadSkus();
+} else {
+  showScreen('login');
+}
+</script>
+</body>
+</html>
